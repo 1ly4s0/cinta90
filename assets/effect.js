@@ -4,6 +4,11 @@ import { cover } from './frame.js';
 export const suffix = 'cinta90';
 export const acceptsImage = true;
 export const acceptsAudio = false;
+export const looks = [
+    { noise: 44, tracking: 38, 'tape-color': 'warm', bleed: 24 },
+    { noise: 22, tracking: 17, 'tape-color': 'cool', bleed: 14 },
+    { noise: 81, tracking: 77, 'tape-color': 'warm', bleed: 66 }
+];
 
 const tape = document.createElement('canvas');
 const video = tape.getContext('2d');
@@ -12,7 +17,9 @@ export function readSettings() {
     return {
         noise: number('noise') / 100,
         tracking: number('tracking') / 100,
-        date: byId('stamp').value
+        date: byId('stamp').value,
+        color: byId('tape-color').value,
+        bleed: number('bleed') / 100
     };
 }
 
@@ -50,7 +57,7 @@ function standby(drawing, width, height) {
     }
 }
 
-export function draw(drawing, media, settings, { width, height, time }) {
+export function draw(drawing, media, settings, { width, height, time, comparison }) {
     // A lower-resolution copy softens the image before adding tape noise.
     const scale = Math.min(1, 540 / width);
     const columns = Math.max(2, Math.round(width * scale));
@@ -60,12 +67,28 @@ export function draw(drawing, media, settings, { width, height, time }) {
         tape.height = rows;
     }
 
-    video.filter = 'saturate(.78) contrast(1.14) sepia(.13)';
+    const filters = {
+        warm: 'saturate(.85) contrast(1.12) sepia(.19)',
+        cool: 'saturate(.72) contrast(1.2) hue-rotate(18deg)',
+        mono: 'grayscale(1) contrast(1.18)'
+    };
+    video.filter = filters[settings.color];
     if (media) cover(video, media, columns, rows);
     else standby(video, columns, rows);
     video.filter = 'none';
 
     drawing.drawImage(tape, 0, 0, width, height);
+    if (settings.bleed && settings.color !== 'mono') {
+        const offset = Math.round(settings.bleed * width * .017);
+        drawing.save();
+        drawing.globalCompositeOperation = 'screen';
+        drawing.globalAlpha = settings.bleed * .44;
+        drawing.filter = 'hue-rotate(-40deg) saturate(2)';
+        drawing.drawImage(tape, -offset, 0, width, height);
+        drawing.filter = 'hue-rotate(44deg) saturate(2)';
+        drawing.drawImage(tape, offset, 0, width, height);
+        drawing.restore();
+    }
     const wobble = Math.sin(time * 10.5) * 3 + 4;
     if (settings.tracking) {
         for (let index = 0; index < 5; index++) {
@@ -106,5 +129,18 @@ export function draw(drawing, media, settings, { width, height, time }) {
         drawing.fillText(day + '.' + month + '.' + year, width * .06, height * .92);
         drawing.fillText('SP', width * .84, height * .13);
         drawing.shadowBlur = 0;
+    }
+    if (media && comparison > 0) {
+        const edge = comparison * width;
+        drawing.save();
+        drawing.beginPath();
+        drawing.rect(0, 0, edge, height);
+        drawing.clip();
+        cover(drawing, media, width, height);
+        drawing.restore();
+        if (comparison < 1) {
+            drawing.fillStyle = '#fff2dc';
+            drawing.fillRect(edge - 1, 0, 2, height);
+        }
     }
 }

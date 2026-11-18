@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Online VHS effect for photos and videos | Cinta90</title>
-    <meta name="description" content="Give a photo or video the look of a home tape from the ’90s. Set the grain and tracking, then add the date you want on screen.">
+    <meta name="description" content="Give photos and videos a VHS look. Compare with the original, tweak the tracking and export PNG, MP4 with audio or WebM.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#15131c">
     <link rel="canonical" href="https://1ly4s0.github.io/cinta90/en/">
@@ -17,7 +17,7 @@
     <meta property="og:locale" content="en_US">
     <meta property="og:url" content="https://1ly4s0.github.io/cinta90/en/">
     <meta property="og:title" content="Online VHS effect for photos and videos | Cinta90">
-    <meta property="og:description" content="Give a photo or video the look of a home tape from the ’90s. Set the grain and tracking, then add the date you want on screen.">
+    <meta property="og:description" content="Give photos and videos a VHS look. Compare with the original, tweak the tracking and export PNG, MP4 with audio or WebM.">
     <meta property="og:image" content="https://1ly4s0.github.io/cinta90/assets/share.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -27,7 +27,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="../assets/style.css">
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Cinta90", "url": "https://1ly4s0.github.io/cinta90/en/", "description": "Give a photo or video the look of a home tape from the ’90s. Set the grain and tracking, then add the date you want on screen.", "inLanguage": "en", "applicationCategory": "MultimediaApplication", "operatingSystem": "Any", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "image": "https://1ly4s0.github.io/cinta90/assets/share.png"}</script>
+    <link rel="stylesheet" href="../assets/workbench.css">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Cinta90", "url": "https://1ly4s0.github.io/cinta90/en/", "description": "Give photos and videos a VHS look. Compare with the original, tweak the tracking and export PNG, MP4 with audio or WebM.", "inLanguage": "en", "applicationCategory": "MultimediaApplication", "operatingSystem": "Any", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "image": "https://1ly4s0.github.io/cinta90/assets/share.png"}</script>
     <script type="module" src="../assets/visual-studio.js"></script>
 </head>
 <body>
@@ -44,19 +45,25 @@
     <main>
         <section class="hero shell">
             <div class="intro">
-                <p class="tool-type">VHS effect</p>
-                <h1>Put it <em>on tape.</em></h1>
-                <p class="lede">Give a photo or video the look of a home tape from the ’90s. Set the grain and tracking, then add the date you want on screen.</p>
-                <p class="privacy"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3m-4 4v2"/></svg> Your file stays on your device.</p>
+                <p class="tool-type">VHS tape simulator</p>
+                <h1>Caught <em>on tape.</em></h1>
+                <p class="lede">Give a photo or video the texture of a VHS tape. Compare it with the original while you adjust the grain, tracking and color.</p>
             </div>
             <section class="studio" id="studio" aria-labelledby="editor-title">
-                <div class="studio-title"><h2 id="editor-title">Tape monitor</h2><span id="preview-label">Sample preview</span></div>
+                <div class="studio-preview">
+                <div class="studio-title"><h2 id="editor-title">Tape monitor</h2><div class="studio-head-actions"><span id="preview-label">Sample preview</span><button id="demo" type="button" class="demo-button">Try demo</button></div></div>
                 <div class="screen visual-screen"><canvas id="preview" aria-hidden="true"></canvas></div>
                 <div class="transport" id="transport" hidden>
                     <button id="listen" type="button" disabled>Play</button>
                     <input id="seek" type="range" min="0" max="1" value="0" step=".01" aria-label="Playback position" disabled>
                     <span id="elapsed">0:00</span>
                 </div>
+                <div class="comparison"><div class="field"><label for="comparison">Compare with the original <output for="comparison">0%</output></label><input id="comparison" type="range" min="0" max="100" value="0" data-unit="%"></div></div>
+                <div class="preview-tools">
+                    <span>Processed on your device</span>
+                </div>
+                </div>
+                <div class="studio-controls">
                 <div class="file-picker">
                     <input id="file" type="file" accept="video/*,image/*,.mp4,.webm,.mov,.jpg,.jpeg,.png,.webp">
                     <label for="file">
@@ -67,29 +74,56 @@
                 </div>
                 <fieldset id="settings">
                     <legend>Settings</legend>
+                    <div class="look-presets"><button type="button" data-look="0" aria-pressed="false">Video store</button><button type="button" data-look="1" aria-pressed="false">Camcorder</button><button type="button" data-look="2" aria-pressed="false">Worn tape</button></div>
                     <div class="settings-grid"><div class="field">
                         <label for="noise">Tape grain <output for="noise">44%</output></label>
                         <input id="noise" type="range" min="0" max="100" value="44" data-unit="%">
                     </div>
-<div class="field">
+                        <div class="field">
                         <label for="tracking">Tracking <output for="tracking">38%</output></label>
                         <input id="tracking" type="range" min="0" max="100" value="38" data-unit="%">
                     </div>
-<div class="field">
+                        <div class="field">
                         <label for="stamp">Date stamp</label>
                         <input type="date" id="stamp" value="1996-08-18">
-                    </div></div>
+                    </div>
+                        <div class="field">
+                            <label for="tape-color">Color</label>
+                            <select id="tape-color">
+                                <option value="warm">Warm memory</option>
+                                <option value="cool">Blue night</option>
+                                <option value="mono">Black and white</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="bleed">Color bleed <output for="bleed">24%</output></label>
+                            <input id="bleed" type="range" min="0" max="100" value="24" data-unit="%">
+                        </div>
+                    </div>
                 </fieldset>
+                <fieldset id="trim" class="trim-panel" hidden>
+                    <legend>Trim video</legend>
+                    <div class="settings-grid">
+                        <div class="field"><label for="trim-in">Start (s)</label><input id="trim-in" type="number" min="0" step=".01" value="0"></div>
+                        <div class="field"><label for="trim-out">End (s)</label><input id="trim-out" type="number" min="0" step=".01" value="0"></div>
+                    </div>
+                </fieldset>
+                <div class="output-panel" id="export-format-row">
+                    <div class="field"><label for="export-format">Video format</label><select id="export-format"><option value="mp4">MP4 · H.264 / AAC</option><option value="webm">WebM · VP8 / Opus</option></select></div>
+                    <p>The first MP4 export may download the encoder. Your video is converted on this device.</p>
+                </div>
                 <div class="action-row"><button id="cancel-render" type="button" hidden>Cancel</button>
                     <button id="save" class="save" type="button" disabled>Download</button></div>
+                <progress id="export-progress" max="100" aria-label="Export progress" hidden></progress>
                 <p id="status" class="status" role="status" aria-live="polite"></p>
+                </div>
             </section>
         </section>
         <section class="guide-band" id="guia">
             <div class="guide shell">
                 <h2>How to add a VHS effect to a photo or video</h2>
                 <ol><li><h3>Open your file</h3><p>Import a photo or a clip your browser can play.</p></li>
-<li><h3>Set up the tape</h3><p>Turn up the grain to roughen the image. Tracking shifts a few lines out of place.</p></li>
+<li><h3>Set up the tape</h3><p>Choose a tape preset and drag the comparison slider to see what changed. Grain, tracking and color can be adjusted separately.</p></li>
 <li><h3>Download the result</h3><p>Photos export as PNG. Video records with its audio and the applied effects.</p></li></ol>
             </div>
         </section>
@@ -98,7 +132,7 @@
             <div><details><summary>Can I remove the date?</summary><p>Yes. Clear the date field to remove the stamp from the preview and download.</p></details>
 <details><summary>What is the output resolution?</summary><p>The aspect ratio stays the same. If the longest side exceeds 1,280 pixels, it scales down to keep the export lighter.</p></details>
 <details><summary>Is my file uploaded?</summary><p>The file is processed in your browser. You don’t need an account.</p></details>
-<details><summary>How long does video export take?</summary><p>It records while the clip plays, so export usually takes about as long as the clip. Your browser determines whether it saves as MP4 or WebM.</p></details></div>
+<details><summary>How long does video export take?</summary><p>It records while the clip plays, so export usually takes about as long as the clip. Choose MP4 with AAC audio or WebM.</p></details></div>
         </section>
         <section class="other shell">
             <h2>More tools</h2>
